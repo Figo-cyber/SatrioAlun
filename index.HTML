@@ -64,11 +64,24 @@ footer{margin-top:80px;border-top:1px solid var(--line);padding:26px 0;text-alig
 #top{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));width:44px;height:44px;border-radius:12px;border:none;background:var(--accent);color:#fff;font-size:1.2rem;cursor:pointer;opacity:0;pointer-events:none;transition:.3s;z-index:40}
 #top.on{opacity:1;pointer-events:auto}
 .rv{opacity:0;transform:translateY(20px);transition:.7s}.rv.in{opacity:1;transform:none}
+html.loading{overflow:hidden}
+#loader{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;transition:opacity .6s,visibility .6s}
+#loader.done{opacity:0;visibility:hidden}
+.ld-robot svg{width:110px;height:auto;animation:float 1.6s ease-in-out infinite;filter:drop-shadow(0 12px 22px var(--glow))}
+.ld-text{font-family:ui-monospace,Consolas,monospace;font-size:.9rem;color:var(--muted);letter-spacing:1px;display:flex;gap:10px}
+.ld-text b{color:var(--accent);font-weight:500;min-width:3.2ch;text-align:right}
+.ld-track{width:min(260px,70vw);height:6px;border-radius:99px;background:var(--line);overflow:hidden}
+#ldb{height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
 @media(max-width:760px){.hero,.about{grid-template-columns:1fr}.robot{order:-1}.robot svg{width:200px}.hero{min-height:auto}.logo{display:none}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
 </style>
 </head>
 <body>
+<div id="loader" role="status" aria-live="polite">
+<div class="ld-robot"><svg viewBox="0 0 120 120" aria-hidden="true"><line x1="60" y1="10" x2="60" y2="26" stroke="var(--accent)" stroke-width="4" stroke-linecap="round"/><circle cx="60" cy="8" r="6" fill="var(--accent2)"/><rect x="18" y="26" width="84" height="72" rx="20" fill="var(--surface)" stroke="var(--accent)" stroke-width="4"/><rect x="30" y="42" width="60" height="28" rx="10" fill="var(--bg)" stroke="var(--line)" stroke-width="2"/><ellipse class="eye" cx="46" cy="56" rx="6" ry="8" fill="var(--accent2)"/><ellipse class="eye" cx="74" cy="56" rx="6" ry="8" fill="var(--accent2)"/><path d="M46 84 Q60 92 74 84" stroke="var(--accent)" stroke-width="4" fill="none" stroke-linecap="round"/></svg></div>
+<div class="ld-text"><span>Memuat portofolio</span><b id="ldp">0%</b></div>
+<div class="ld-track"><div id="ldb"></div></div>
+</div>
 <header><div class="wrap"><nav>
 <a class="logo" href="#home">SAT<b>_</b>IO</a>
 <div class="links"><a href="#home">Home</a><a href="#about">About</a><a href="#skills">Skills</a><a href="#projects">Projects</a><a href="#achievements">Achievements</a><a href="#education">Education</a><a href="#hobbies">Hobbies</a><a href="#goals">Goals</a><a href="#contact">Contact</a></div>
@@ -172,6 +185,11 @@ footer{margin-top:80px;border-top:1px solid var(--line);padding:26px 0;text-alig
 <script>
 (function(){
 var root=document.documentElement;
+root.classList.add('loading');
+var ld=document.getElementById('loader'),ldb=document.getElementById('ldb'),ldp=document.getElementById('ldp'),t0=performance.now(),DUR=1800;
+function hideLoader(){ld.classList.add('done');root.classList.remove('loading');setTimeout(function(){ld.remove()},700)}
+function tick(now){var p=Math.min((now-t0)/DUR,1),e=1-Math.pow(1-p,2);ldb.style.width=(e*100)+'%';ldp.textContent=Math.round(e*100)+'%';if(p<1)requestAnimationFrame(tick);else setTimeout(hideLoader,250)}
+requestAnimationFrame(tick);
 try{var s=localStorage.getItem('theme');if(s)root.setAttribute('data-theme',s)}catch(e){}
 document.getElementById('theme').onclick=function(){
 var dark=root.getAttribute('data-theme')==='dark'||(!root.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme:dark)').matches);
